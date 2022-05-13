@@ -1,19 +1,34 @@
-################################ MAIN LOGIN PAGE ##################################
-# This page is the main login page from the website FC SYNTRA                     #
-# User logs in with login username & password                                     #
-# User can choose his/her profile: supporter or administrator                     #
-# There is a link if user does not remember the password (will not be created)    #
-# If user logs in for the first time, he/she can create a login ==> another page  #
-###################################################################################
-
+############################### MAIN LOGIN PAGE #################################
+# This page is the main login page from the website FC SYNTRA                   #
+# User logs in with login username & password                                   #
+# User can choose his/her profile: supporter or administrator                   #
+# There is a link if user does not remember the password (will not be created)  #
+# If user logs in for the first time, he/she can create a login ==> another page#
+#################################################################################
+import webbrowser
 from tkinter import *
 from tkinter.ttk import Combobox
+from tkinter import messagebox
+from PIL import ImageTk, Image
 
 #COMMAND CONNECT
-def connect():
-    return
+def entered_values():
+    username = username_entry.get()
+    password = password_entry.get()
+
+    if(username == "" and password == ""):
+        messagebox.showinfo("", "Blank not allowed")
+
+    elif(username == "Admin" and password =="123"):
+        messagebox.showinfo("", "Login successful")
+    else:
+        messagebox.showinfo("", "Incorrect Username and Password")
+
+def open_url_login_vergeten():
+    webbrowser.open_new_tab('https://krcgenk.tickethour.be/l0322ww/accountPassword.html')
 
 # creation page Main_Login_Page
+
 login_page = Tk()
 login_page.title("FC Syntra Genk")
 login_page.state("zoomed")
@@ -21,15 +36,21 @@ login_page.config(bg='DodgerBlue3')
 login_page.grid_rowconfigure(0, weight=1)
 login_page.grid_columnconfigure(0, weight=1)
 
-# #Logo
-# my_image = PhotoImage(file="logo.png")
-# Label(login_page,image=my_image, width="200", height="200").pack()
+global username_entry
+global password_entry
 
 # TITLE PAGE
 L_Title = Label(login_page, text= "FC Syntra", fg='White', bg ='DodgerBlue3', font=('Helvetica',80))
 L_Title.pack(pady = 20)
 
-## CANVAS
+#LOGO
+my_logo = Image.open("syntrapxl_academie_logo_digitaal_rgb_square.png")
+resized = my_logo.resize((200,200), Image.ANTIALIAS)
+new_logo = ImageTk.PhotoImage(resized)
+new_logo_label = Label(login_page, image=new_logo, bg ="DodgerBlue3")
+new_logo_label.place(x=1500, y=100)
+
+## CANVAS ##
 # CANVAS: kader voor lijnen
 my_canvas = Canvas(login_page, width=1224, height=800, background="DodgerBlue2",highlightthickness=0)
 my_canvas.grid_rowconfigure(0, weight=1)
@@ -41,40 +62,42 @@ my_canvas.create_line(1224, 0, 400, 250, fill="white", width=8)
 my_canvas.create_line(1224, 0, 400, 400, fill="SteelBlue2", width=8)
 my_canvas.create_line(1224, 0, 400, 600, fill="RoyalBlue4", width=8)
 
-## LABELS
+## LABELS ##
 
-Login = Label(text="LOGIN:", bg= "DodgerBlue3", fg ="White", font=('Helvetica',15) )
-Login.place(x = 270 , y = 300)
+Username = Label(text="USERNAME:", bg= "DodgerBlue3", fg ="White", font=('Helvetica',15) )
+Username.place(x = 225 , y = 300)
 
 Password = Label(text="PASSWORD:",bg= "DodgerBlue3", fg ="White", font=('Helvetica',15))
 Password.place(x = 220 , y = 400)
 
-Profile = Label(text="PROFIEL:",bg= "DodgerBlue3", fg ="White", font=('Helvetica',15))
+Profile = Label(text="PROFILE:",bg= "DodgerBlue3", fg ="White", font=('Helvetica',15))
 Profile.place(x = 245 , y = 500)
 
-Password_forget = Label(text="Paswoord vergeten?", bg = "DodgerBlue2", fg ="White", font=('Helvetica',10))
+Password_forget = Label(text="Paswoord vergeten?", bg = "DodgerBlue2", fg ="White", font=('Helvetica',10, 'underline'))
 Password_forget.place(x = 400 , y = 645)
+Password_forget.bind("<Button-1>", lambda x:open_url_login_vergeten())
 
-Login_creation = Label(text="Nog geen login? Klik hier.", bg="DodgerBlue2", fg="White",font=('Helvetica',20, 'bold','underline'))
+Login_creation = Label(text="Nog geen account? Klik hier", bg="DodgerBlue2", fg="White",font=('Helvetica',15, 'bold','underline'))
 Login_creation.place(x = 400 , y = 700)
 
-## TEKSTVAKKEN
-login = StringVar
+## TEKSTVAKKEN ##
+username = StringVar
 password = StringVar
-
-login_entry = Entry(textvariable= login, width="50", highlightthickness=2)
-login_entry.place(x = 400 , y = 300, height = "30")
-
-password_entry = Entry(textvariable= password, width="50",highlightthickness=2)
-password_entry.place(x = 400 , y = 400, height = "30")
-
-#Combobox Profiel kiezen
-v_profile = [" ", "Supporter", "Administrator"]
-profile = Combobox(login_page, values = v_profile, width="47")
-profile.place(x = 400 , y = 500, height = "30")
+profile = StringVar
+#LOGIN
+username_entry = Entry(textvariable = username, width=50, highlightthickness=2)
+username_entry.place(x = 400 , y = 300, height = 30)
+#PASSWORD
+password_entry = Entry(login_page,textvariable= password, show="*", width="50",highlightthickness=2)
+password_entry.place(x = 400 , y = 400, height = 30)
+#PROFILE
+values_profile = [" ", "Supporter", "Administrator"]
+profile_entry = Combobox(login_page, values = values_profile, width=47)
+profile_entry.place(x = 400 , y = 500, height = 30)
 
 #BUTTON CONNECT
-login_button =Button(login_page, text="Connect", width="30", command= connect, bg ="White")
+login_button =Button(login_page, text="Connect", width="30", command= entered_values, bg ="White")
 login_button.place(x = 400 , y = 600, height = "30")
 
 login_page.mainloop()
+
