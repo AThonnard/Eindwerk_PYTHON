@@ -10,7 +10,6 @@ from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter import messagebox
 from PIL import ImageTk, Image
-
 #COMMAND CONNECT
 def entered_values():
     username = username_entry.get()
@@ -27,8 +26,12 @@ def entered_values():
 def open_url_login_vergeten():
     webbrowser.open_new_tab('https://krcgenk.tickethour.be/l0322ww/accountPassword.html')
 
-# creation page Main_Login_Page
+def open_creation_page():
+    login_page.destroy()
+    import Account_creation
 
+
+# creation page Main_Login_Page
 login_page = Tk()
 login_page.title("FC Syntra Genk")
 login_page.state("zoomed")
@@ -38,6 +41,7 @@ login_page.grid_columnconfigure(0, weight=1)
 
 global username_entry
 global password_entry
+global Login_creation
 
 # TITLE PAGE
 L_Title = Label(login_page, text= "FC Syntra", fg='White', bg ='DodgerBlue3', font=('Helvetica',80))
@@ -59,8 +63,8 @@ my_canvas.pack(padx= 5, pady = 90)
 
 # CANVAS: lijnen in het kader met beginpunt x-as, beginpunt y-as, eindpunt y-as,lengte, kleur, breedte
 my_canvas.create_line(1224, 0, 400, 250, fill="white", width=8)
-my_canvas.create_line(1224, 0, 400, 400, fill="SteelBlue2", width=8)
-my_canvas.create_line(1224, 0, 400, 600, fill="RoyalBlue4", width=8)
+my_canvas.create_line(1224, 0, 400, 400, fill="Red", width=8)
+my_canvas.create_line(1224, 0, 400, 600, fill="Black", width=8)
 
 ## LABELS ##
 
@@ -77,8 +81,10 @@ Password_forget = Label(text="Paswoord vergeten?", bg = "DodgerBlue2", fg ="Whit
 Password_forget.place(x = 400 , y = 645)
 Password_forget.bind("<Button-1>", lambda x:open_url_login_vergeten())
 
-Login_creation = Label(text="Nog geen account? Klik hier", bg="DodgerBlue2", fg="White",font=('Helvetica',15, 'bold','underline'))
+Login_creation = Label(text="Nog geen account? Klik hier",bg="DodgerBlue2", fg="White",font=('Helvetica',15, 'bold','underline'))
 Login_creation.place(x = 400 , y = 700)
+Login_creation.bind("<Button-1>", lambda y:open_creation_page())
+
 
 ## TEKSTVAKKEN ##
 username = StringVar
@@ -100,4 +106,3 @@ login_button =Button(login_page, text="Connect", width="30", command= entered_va
 login_button.place(x = 400 , y = 600, height = "30")
 
 login_page.mainloop()
-
