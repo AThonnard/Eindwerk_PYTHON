@@ -41,8 +41,8 @@ my_canvas.pack(padx= 5, pady = 90)
 
 # CANVAS: lijnen in het kader met beginpunt x-as, beginpunt y-as, eindpunt y-as,lengte, kleur, breedte
 my_canvas.create_line(1224, 0, 400, 250, fill="white", width=8)
-my_canvas.create_line(1224, 0, 400, 400, fill="SteelBlue2", width=8)
-my_canvas.create_line(1224, 0, 400, 600, fill="RoyalBlue4", width=8)
+my_canvas.create_line(1224, 0, 400, 400, fill="Red", width=8)
+my_canvas.create_line(1224, 0, 400, 600, fill="Black", width=8)
 
 ## LABELS ##
 
@@ -102,6 +102,7 @@ aanspreking = StringVar
 taal = StringVar
 paswoord = StringVar
 paswoordherhaald = StringVar
+info_check = IntVar
 
 #FIRSTNAME
 firstname_entry = Entry(textvariable = voornaam, width=50, highlightthickness=2)
@@ -128,7 +129,7 @@ street_entry.place(x = 370 , y = 460, height = 30)
 phone_entry = Entry(textvariable = telefoon, width=20, highlightthickness=2)
 phone_entry.place(x = 370 , y = 510, height = 30)
 #MOBILE
-mobile_entry = Entry(textvariable = gsm, width=20, highlightthickness=2)
+mobile_entry = Entry(text ="Optional",textvariable = gsm, width=20, highlightthickness=2)
 mobile_entry.place(x = 520 , y = 510, height = 30)
 #TITLE
 title_entry = Entry(textvariable = aanspreking, width=10, highlightthickness=2)
@@ -146,5 +147,9 @@ password_repeat_entry.place(x = 370 , y = 770, height = 30)
 #BUTTON CONNECT
 login_button =Button(create_acc_page, text="Valideer gegevens", width="30", command= validate_data, bg ="White")
 login_button.place(x = 840 , y = 940, height = "30")
+
+#CHECK BOX INFO
+info_check_box = Checkbutton(create_acc_page, variable=info_check, onvalue=1, offvalue=0, bg="DodgerBlue2",highlightthickness=2)
+info_check_box.place(x = 370, y = 820)
 
 create_acc_page.mainloop()
