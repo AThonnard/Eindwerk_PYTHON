@@ -123,5 +123,3 @@ login_button =Button(login_page, text="Connect", width="30", command= login_veri
 login_button.place(x = 400 , y = 600, height = "30")
 
 login_page.mainloop()
-
-
