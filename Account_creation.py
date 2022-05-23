@@ -9,6 +9,8 @@ from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter import messagebox
 from PIL import ImageTk, Image
+from cryptography.fernet import Fernet
+import re
 
 #CONNECT TO DATABASE FCSYNTRA
 fcsyntra_db = mysql.connector.connect(
@@ -23,6 +25,39 @@ mycursor = fcsyntra_db.cursor()
 def terug_login_pagina():
     create_acc_page.destroy()
     import Main_Login_Page
+
+#PASSWORD CONDITIONS
+# Should have at least one number.
+# Should have at least one uppercase and one lowercase character.
+# Should have at least one special symbol.
+# Should be between 6 to 20 characters long.
+def check_password():
+    passwd = password_entry.get()
+    reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"
+
+    # compiling regex
+    pat = re.compile(reg)
+
+    # searching regex
+    mat = re.search(pat, passwd)
+
+    # validating conditions
+    if mat:
+        messagebox.showinfo("", "Paswoord is geldig")
+
+    else:
+        messagebox.showinfo("","Paswoord is niet geldig! Het voldoet niet aan de voorwaarden: \n"
+                               "Het moet minstens 1 cijfer bevatten.\nEr moet minstens 1 hoofdletter zijn.\n"
+                               "Er moet minstens 1 speciaal teken hebben.\nHet moet tussen de 6 en 20 karakters lang zijn")
+
+def encrypt_pwd():
+    global encpwd
+    pwd = password_entry.get()
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    encpwd = fernet.encrypt(pwd.encode())
+    print(pwd)
+    print(encpwd)
 
 #NAKIJKEN INGEBRACHTE GEGEVENS EN WEGSCHRIJVEN IN DATABASE
 def validate_data():
@@ -48,10 +83,17 @@ def validate_data():
                   postal_entry.get(), state_entry.get(),
                   street_entry.get(), phone_entry.get(), mobile_entry.get(),
                   title_cb.get(),language_cb.get(),
-                  password_entry.get()]
+                  encpwd]
         mycursor.execute(sql,val)
         fcsyntra_db.commit()
+        messagebox.showinfo("", "Account succesvol gecreëerd")
+        create_acc_page.destroy()
     return
+
+def main_check_data():
+    check_password()
+    encrypt_pwd()
+    validate_data()
 
 # creation page Create Account Page
 create_acc_page = Tk()
@@ -208,7 +250,7 @@ conditions_checkb = Checkbutton(create_acc_page, variable=conditions_check, onva
 conditions_checkb.place(x = 370, y = 870)
 
 #BUTTON CONNECT
-login_button =Button(create_acc_page, text="Valideer gegevens", width="30", command= validate_data, bg ="White")
+login_button =Button(create_acc_page, text="Valideer gegevens", width="30", command= main_check_data, bg ="White")
 login_button.place(x = 840 , y = 940, height = "30")
 
 create_acc_page.mainloop()
