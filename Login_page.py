@@ -10,6 +10,8 @@ from tkinter import *
 from tkinter.ttk import Combobox
 from tkinter import messagebox
 from PIL import ImageTk, Image
+from cryptography.fernet import Fernet
+
 
 #CONNECT TO DATABASE FCSYNTRA
 fcsyntra_db = mysql.connector.connect(
@@ -42,9 +44,37 @@ def login_verify():
             mycursor.execute(sql)
             if mycursor.fetchall():
                 messagebox.showinfo("", "Login Successful")
+                get_id_supp()
                 login_page.destroy()
+                import ticket_page
             else:
                 messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
+
+def decrypt_pwd(encrypted_message):
+    sql = """SELECT paswoord from leden WHERE email = '{username}' AND paswoord = '{password}';"""
+    mycursor.execute(sql)
+    if mycursor.fetchall():
+        print(password)
+        key = password
+        f = Fernet(key)
+        decrypted_pwd = f.decrypt(encrypted_message)
+        print(decrypted_pwd.decode())
+global lidNummer
+
+def get_id_supp():
+    #global lidNummer
+    username = username_entry.get()
+    password = password_entry.get()
+    sql = f"SELECT lidNummer from leden WHERE email = '{username}' AND paswoord = '{password}';"
+    mycursor.execute(sql)
+    for x in mycursor:
+        lidNummer = x[0]
+        print(lidNummer)
+    if mycursor.fetchall():
+        messagebox.showinfo("", "ID opgehaald")
+
+    return lidNummer
+
 
 def open_reset_pwd_page():
     login_page.destroy()
@@ -123,4 +153,10 @@ profile_entry.place(x = 400 , y = 500, height = 30)
 login_button =Button(login_page, text="Connect", width="30", command= login_verify, bg ="White")
 login_button.place(x = 400 , y = 600, height = "30")
 
-login_page.mainloop()
+#login_page.mainloop()
+
+def main():
+    login_page.mainloop()
+
+if __name__ == "__main__":
+    main()
