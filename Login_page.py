@@ -5,7 +5,6 @@
 # There is a link if user does not remember the password (will not be created)  #
 # If user logs in for the first time, he/she can create a login ==> another page#
 #################################################################################
-import webbrowser
 import mysql.connector
 from tkinter import *
 from tkinter.ttk import Combobox
@@ -35,6 +34,7 @@ def login_verify():
             if mycursor.fetchall():
                 messagebox.showinfo("", "Login Successful")
                 login_page.destroy()
+                import admin_page
             else:
                 messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
         else:
@@ -46,12 +46,13 @@ def login_verify():
             else:
                 messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
 
-def open_url_login_vergeten():
-    webbrowser.open_new_tab('https://krcgenk.tickethour.be/l0322ww/accountPassword.html')
+def open_reset_pwd_page():
+    login_page.destroy()
+    import reset_password_page
 
 def open_creation_page():
     login_page.destroy()
-    import Account_creation
+    import account_creation_page
 
 # creation page Main_Login_Page
 login_page = Tk()
@@ -97,7 +98,7 @@ Profile.place(x = 245 , y = 500)
 
 Password_forget = Label(text="Paswoord vergeten?", bg = "DodgerBlue2", fg ="White", font=('Helvetica',10, 'underline'))
 Password_forget.place(x = 400 , y = 645)
-Password_forget.bind("<Button-1>", lambda x:open_url_login_vergeten())
+Password_forget.bind("<Button-1>", lambda x:open_reset_pwd_page())
 
 Login_creation = Label(text="Nog geen account? Klik hier",bg="DodgerBlue2", fg="White",font=('Helvetica',15, 'bold','underline'))
 Login_creation.place(x = 400 , y = 700)
@@ -108,10 +109,10 @@ username = StringVar
 password = StringVar
 
 #LOGIN
-username_entry = Entry(textvariable = username, width=50, highlightthickness=2)
+username_entry = Entry(width=50, highlightthickness=2)
 username_entry.place(x = 400 , y = 300, height = 30)
 #PASSWORD
-password_entry = Entry(login_page,textvariable= password, show="*", width="50",highlightthickness=2)
+password_entry = Entry(login_page, show="*", width="50",highlightthickness=2)
 password_entry.place(x = 400 , y = 400, height = 30)
 #PROFILE
 values_profile = [" ", "Supporter", "Administrator"]
