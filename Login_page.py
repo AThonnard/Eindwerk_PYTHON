@@ -12,7 +12,6 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 from cryptography.fernet import Fernet
 
-
 #CONNECT TO DATABASE FCSYNTRA
 fcsyntra_db = mysql.connector.connect(
     host = "localhost",
@@ -27,6 +26,7 @@ def login_verify():
     username = username_entry.get()
     password = password_entry.get()
     profile = profile_entry.get()
+    decrypt_pwd()
     if username == "" or password == "" or profile =="":
         messagebox.showinfo("", "Blanks not allowed")
     else:
@@ -39,42 +39,41 @@ def login_verify():
                 import admin_page
             else:
                 messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
+        elif (profile == 'Supporter') and (password == str_decrypted_pwd):
+            messagebox.showinfo("", "Login Successful")
+            get_id_supp()
+            login_page.destroy()
+            import ticket_page
         else:
-            sql = f"SELECT email from leden WHERE email = '{username}' AND paswoord = '{password}';"
-            mycursor.execute(sql)
-            if mycursor.fetchall():
-                messagebox.showinfo("", "Login Successful")
-                get_id_supp()
-                login_page.destroy()
-                import ticket_page
-            else:
-                messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
+            messagebox.showinfo("", "Incorrect Username and/or Password and/or profile")
 
-def decrypt_pwd(encrypted_message):
-    sql = """SELECT paswoord from leden WHERE email = '{username}' AND paswoord = '{password}';"""
+def decrypt_pwd():
+    global str_decrypted_pwd
+    username = username_entry.get()
+    sql = f"SELECT paswoord, pwd_key from leden WHERE email = '{username}';"
     mycursor.execute(sql)
-    if mycursor.fetchall():
-        print(password)
-        key = password
+    for x in mycursor:
+        encrypted_pwd = x[0]
+        read_key = x[1]
+        print(read_key)
+        key = read_key
         f = Fernet(key)
-        decrypted_pwd = f.decrypt(encrypted_message)
-        print(decrypted_pwd.decode())
-global lidNummer
+        decrypted_pwd = f.decrypt(encrypted_pwd)
+        print(decrypted_pwd)
+        str_decrypted_pwd = decrypted_pwd.decode('UTF-8')
+        print(str_decrypted_pwd)
 
 def get_id_supp():
-    #global lidNummer
+    global lidNummer
     username = username_entry.get()
-    password = password_entry.get()
-    sql = f"SELECT lidNummer from leden WHERE email = '{username}' AND paswoord = '{password}';"
+    sql = f"SELECT lidNummer from leden WHERE email = '{username}';"
     mycursor.execute(sql)
     for x in mycursor:
         lidNummer = x[0]
         print(lidNummer)
-    if mycursor.fetchall():
-        messagebox.showinfo("", "ID opgehaald")
-
-    return lidNummer
-
+        Lidnr_log = open("Lidnr_log.txt", "w")
+        Lidnr_log.writelines(str(lidNummer))
+        Lidnr_log.close()
 
 def open_reset_pwd_page():
     login_page.destroy()
@@ -153,10 +152,4 @@ profile_entry.place(x = 400 , y = 500, height = 30)
 login_button =Button(login_page, text="Connect", width="30", command= login_verify, bg ="White")
 login_button.place(x = 400 , y = 600, height = "30")
 
-#login_page.mainloop()
-
-def main():
-    login_page.mainloop()
-
-if __name__ == "__main__":
-    main()
+login_page.mainloop()
