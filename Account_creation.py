@@ -34,17 +34,13 @@ def terug_login_pagina():
 def check_password():
     passwd = password_entry.get()
     reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"
-
     # compiling regex
     pat = re.compile(reg)
-
     # searching regex
     mat = re.search(pat, passwd)
-
     # validating conditions
     if mat:
         messagebox.showinfo("", "Paswoord is geldig")
-
     else:
         messagebox.showinfo("","Paswoord is niet geldig! Het voldoet niet aan de voorwaarden: \n"
                                "Het moet minstens 1 cijfer bevatten.\nEr moet minstens 1 hoofdletter zijn.\n"
@@ -52,11 +48,13 @@ def check_password():
 
 def encrypt_pwd():
     global encpwd
+    global pwd_key
     pwd = password_entry.get()
-    key = Fernet.generate_key()
-    fernet = Fernet(key)
-    encpwd = fernet.encrypt(pwd.encode())
     print(pwd)
+    pwd_key = Fernet.generate_key()
+    print(pwd_key)
+    f = Fernet(pwd_key)
+    encpwd = f.encrypt(pwd.encode())
     print(encpwd)
 
 #NAKIJKEN INGEBRACHTE GEGEVENS EN WEGSCHRIJVEN IN DATABASE
@@ -71,19 +69,18 @@ def validate_data():
     for x in lijst_data:
         if len(x) > 0:
             teller = teller+1
-    print(teller)
     if teller < 12:
         messagebox.showinfo("", "U heeft niet alle verplichte velden ingevuld")
     elif (teller == 12) and (conditions_check.get() == 0):
         messagebox.showinfo("", "U moet de algemene voorwaarden aanvaarden")
     elif (teller == 12) and (conditions_check.get() == 1):
-        sql = "INSERT INTO leden (voornaam, achternaam, email, land, postcode, gemeente, straat, telefoon,gsm,aanspreking,taal, paswoord) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "INSERT INTO leden (voornaam, achternaam, email, land, postcode, gemeente, straat, telefoon,gsm,aanspreking,taal, paswoord, pwd_key) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         val = [firstname_entry.get(),lastname_entry.get(),
                   email_entry.get(),country_cb.get(),
                   postal_entry.get(), state_entry.get(),
                   street_entry.get(), phone_entry.get(), mobile_entry.get(),
                   title_cb.get(),language_cb.get(),
-                  encpwd]
+                  encpwd,pwd_key]
         mycursor.execute(sql,val)
         fcsyntra_db.commit()
         messagebox.showinfo("", "Account succesvol gecreëerd")
@@ -131,7 +128,6 @@ my_canvas.create_line(1224, 0, 400, 400, fill="Red", width=8)
 my_canvas.create_line(1224, 0, 400, 600, fill="Black", width=8)
 
 ## LABELS ##
-
 mandatory_f_label = Label(text="( Alle velden zijn verplicht, tenzij anders vermeld )", bg= "DodgerBlue3", fg ="White", font=('Helvetica',10) )
 mandatory_f_label.place(x = 350 , y = 170)
 
@@ -202,32 +198,32 @@ info_check = IntVar(create_acc_page)
 conditions_check = IntVar(create_acc_page)
 
 #FIRSTNAME
-firstname_entry = Entry(textvariable = voornaam, width=50, highlightthickness=2)
+firstname_entry = Entry(width=50, highlightthickness=2)
 firstname_entry.place(x = 370 , y = 210, height = 30)
 #LASTNAME
-lastname_entry = Entry(create_acc_page,textvariable= familienaam, width="50",highlightthickness=2)
+lastname_entry = Entry(width=50,highlightthickness=2)
 lastname_entry.place(x = 370 , y = 260, height = 30)
 #EMAIL
-email_entry = Entry(textvariable = email, width=50, highlightthickness=2)
+email_entry = Entry(width=50, highlightthickness=2)
 email_entry.place(x = 370 , y = 310, height = 30)
 #COUNTRY
 country_cb = AutocompleteCombobox(create_acc_page, state = "readonly", width=30)
 country_cb['values'] = ('Afghanistan', 'Aland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia, Plurinational State of', 'Bonaire, Sint Eustatius and Saba', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory', 'Brunei Darussalam', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Congo, The Democratic Republic of the', 'Cook Islands', 'Costa Rica', "Côte d'Ivoire", 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Islands (Malvinas)', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'French Southern Territories', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Heard Island and McDonald Islands', 'Holy See (Vatican City State)', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran, Islamic Republic of', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', "Korea, Democratic People's Republic of", 'Korea, Republic of', 'Kuwait', 'Kyrgyzstan', "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Macedonia, Republic of', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia, Federated States of', 'Moldova, Republic of', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk Island', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestinian Territory, Occupied', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russian Federation', 'Rwanda', 'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Martin (French part)', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten (Dutch part)', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia and the South Sandwich Islands', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'South Sudan', 'Svalbard and Jan Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syrian Arab Republic', 'Taiwan, Province of China', 'Tajikistan', 'Tanzania, United Republic of', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Minor Outlying Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela, Bolivarian Republic of', 'Viet Nam', 'Virgin Islands, British', 'Virgin Islands, U.S.', 'Wallis and Futuna', 'Yemen', 'Zambia', 'Zimbabwe')
 country_cb.place(x = 370 , y = 360, height = 30)
 #POSTALCODE
-postal_entry = Entry(textvariable = postcode, width=10, highlightthickness=2)
+postal_entry = Entry( width=10, highlightthickness=2)
 postal_entry.place(x = 370 , y = 410, height = 30)
 #GEMEENTE
-state_entry = Entry(textvariable = gemeente, width=45, highlightthickness=2)
+state_entry = Entry(width=45, highlightthickness=2)
 state_entry.place(x = 450 , y = 410, height = 30)
 #STREET
-street_entry = Entry(textvariable = straat, width=50, highlightthickness=2)
+street_entry = Entry(width=50, highlightthickness=2)
 street_entry.place(x = 370 , y = 460, height = 30)
 #PHONE NUMBER
-phone_entry = Entry(textvariable = telefoon, width=30, highlightthickness=2)
+phone_entry = Entry(width=30, highlightthickness=2)
 phone_entry.place(x = 370 , y = 510, height = 30)
 #MOBILE
-mobile_entry = Entry(textvariable = gsm, width=30, highlightthickness=2)
+mobile_entry = Entry( width=30, highlightthickness=2)
 mobile_entry.insert(END, "Mobiel (optioneel)")
 mobile_entry.place(x = 600 , y = 510, height = 30)
 #TITLE
@@ -235,24 +231,21 @@ title_cb = Combobox(create_acc_page,state = "readonly", width=10)
 title_cb['values'] = ('Dhr', 'Mevr.')
 title_cb.place(x = 370 , y = 560, height = 30)
 #LANGUAGE
-language_cb = Combobox(create_acc_page, state = "readonly",width=20)
+language_cb = Combobox(state = "readonly",width=20)
 language_cb['values']=('Nederlands', 'Frans', 'Duits','Engels')
 language_cb.place(x = 370 , y = 610, height = 30)
 #PASSWORD
-password_entry = Entry(textvariable = paswoord, width=30, highlightthickness=2)
+password_entry = Entry(width=30, highlightthickness=2)
 password_entry.place(x = 370 , y = 720, height = 30)
 #PASSWORD REPEAT
-password_repeat_entry = Entry(textvariable = paswoordherhaald, show="*", width=30, highlightthickness=2)
+password_repeat_entry = Entry(show="*", width=30, highlightthickness=2)
 password_repeat_entry.place(x = 370 , y = 770, height = 30)
-
 #CHECK BOX INSCHRIJVEN
 info_check_box = Checkbutton(create_acc_page, variable=info_check, onvalue=1, offvalue=0, bg="DodgerBlue2",highlightthickness=2)
 info_check_box.place(x = 370, y = 820)
-
 #CHECK BOX VOORWAARDEN
 conditions_checkb = Checkbutton(create_acc_page, variable=conditions_check, onvalue=1, offvalue=0, bg="DodgerBlue2",highlightthickness=2)
 conditions_checkb.place(x = 370, y = 870)
-
 #BUTTON CONNECT
 login_button =Button(create_acc_page, text="Valideer gegevens", width="30", command= main_check_data, bg ="White")
 login_button.place(x = 840 , y = 940, height = "30")
