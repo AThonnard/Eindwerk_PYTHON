@@ -13,6 +13,8 @@ def terug_login_pagina():
 def reset_pwd():
     return
 
+######################################################################### PAGE CREATIE #############################################################################################
+
 # creation page Main_Login_Page
 reset_pwd_page = Tk()
 reset_pwd_page.title("FC Syntra Genk")
